@@ -102,7 +102,6 @@ button {
   font-size: 13px;
 }
 
-.team-card,
 .footer-card {
   padding: 20px;
   border-radius: 22px;
@@ -117,13 +116,6 @@ button {
   color: var(--accent);
 }
 
-.team-card h1 {
-  margin: 10px 0 12px;
-  font-size: 34px;
-  line-height: 1.15;
-}
-
-.team-card p,
 .footer-card li {
   color: var(--muted);
   line-height: 1.6;
@@ -1051,7 +1043,6 @@ dd {
     align-items: stretch;
   }
 
-  .team-card h1,
   .hero h2 {
     font-size: 28px;
   }
