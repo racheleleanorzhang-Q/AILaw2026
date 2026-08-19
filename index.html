@@ -352,7 +352,7 @@
                   <div class="form-grid">
                     <label class="wide">
                       审批类型
-                      <select id="launch-approval-type">
+                      <select id="launch-approval-type" required>
                         <option>利益冲突审批</option>
                         <option>新项目立项审批</option>
                         <option>报价审批</option>
@@ -368,15 +368,15 @@
                   <div class="form-grid">
                     <label>
                       关联客户
-                      <input id="launch-client" type="text" value="北京新望资本有限公司" />
+                      <input id="launch-client" type="text" value="北京新望资本有限公司" required />
                     </label>
                     <label>
                       关联项目
-                      <input id="launch-project" type="text" value="常年法律顾问 2026" />
+                      <input id="launch-project" type="text" value="常年法律顾问 2026" required />
                     </label>
                     <label class="wide">
                       关联文书/合同/事项
-                      <input id="launch-object" type="text" value="融资合规意见备忘录 V5" />
+                      <input id="launch-object" type="text" value="融资合规意见备忘录 V5" required />
                     </label>
                   </div>
                 </section>
@@ -385,7 +385,7 @@
                   <div class="form-grid">
                     <label>
                       风险等级
-                      <select id="launch-risk">
+                      <select id="launch-risk" required>
                         <option>高</option>
                         <option>中</option>
                         <option>低</option>
@@ -393,7 +393,7 @@
                     </label>
                     <label>
                       紧急程度
-                      <select id="launch-urgency">
+                      <select id="launch-urgency" required>
                         <option>紧急</option>
                         <option>正常</option>
                         <option>低优先级</option>
@@ -401,7 +401,7 @@
                     </label>
                     <label class="wide">
                       事项摘要
-                      <textarea id="launch-summary">客户拟在今晚前对外发送融资合规说明，需审批当前意见备忘录 V5 版本。</textarea>
+                      <textarea id="launch-summary" required>客户拟在今晚前对外发送融资合规说明，需审批当前意见备忘录 V5 版本。</textarea>
                     </label>
                   </div>
                 </section>
@@ -447,7 +447,7 @@
               <div class="panel-head">
                 <h3 id="launch-side-title">预览审批链</h3>
               </div>
-              <div class="chain-preview">
+              <div class="chain-preview" id="launch-chain-preview">
                 <div class="chain-node">系统校验：客户档案 / 历史利冲</div>
                 <div class="chain-node">复核律师审批</div>
                 <div class="chain-node">项目负责人审批</div>
@@ -455,7 +455,7 @@
                 <div class="chain-node">通过后锁版并允许发送</div>
               </div>
               <div class="submit-box">
-                <div class="submit-meta">预计 SLA：1 个工作日</div>
+                <div class="submit-meta" id="launch-sla">预计 SLA：1 个工作日</div>
                 <button class="primary-btn" id="launch-side-action">下一步</button>
               </div>
             </aside>
