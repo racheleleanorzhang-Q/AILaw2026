@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AILaw2026 | 法律业务审批原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">A</div>
+          <div>
+            <div class="brand-title">AILaw2026</div>
+            <div class="brand-subtitle">法律业务审批原型</div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="eyebrow">Alpha 风格参考</div>
+          <h1>下午好，法务团队</h1>
+          <p>让审批成为风险控制层，而不是孤立 OA。</p>
+        </div>
+
+        <nav class="side-nav">
+          <button class="nav-item active" data-view="dashboard">
+            <span>工作台</span>
+            <small>Overview</small>
+          </button>
+          <button class="nav-item" data-view="approval-center">
+            <span>审批中心</span>
+            <small>Queue</small>
+          </button>
+          <button class="nav-item" data-view="approval-detail">
+            <span>审批详情</span>
+            <small>Decision</small>
+          </button>
+          <button class="nav-item" data-view="launch">
+            <span>发起审批</span>
+            <small>Submit</small>
+          </button>
+          <button class="nav-item" data-view="templates">
+            <span>模板配置</span>
+            <small>Template</small>
+          </button>
+          <button class="nav-item" data-view="rules">
+            <span>规则配置</span>
+            <small>Rule Engine</small>
+          </button>
+          <button class="nav-item" data-view="analytics">
+            <span>治理报表</span>
+            <small>Governance</small>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="footer-card">
+            <div class="footer-label">Phase 1 范围</div>
+            <ul>
+              <li>客户准入</li>
+              <li>利冲审批</li>
+              <li>立项审批</li>
+              <li>报价/折扣</li>
+              <li>文书外发</li>
+              <li>开票审批</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="search-wrap">
+            <input type="search" placeholder="搜索项目、客户、审批编号、文书版本" />
+          </div>
+          <div class="top-actions">
+            <div class="action-pill">线上课程</div>
+            <div class="action-pill">智能证据</div>
+            <div class="action-pill">电子签章</div>
+            <div class="notif">99+</div>
+          </div>
+        </header>
+
+        <section class="module-strip">
+          <button class="module-btn">工作台</button>
+          <button class="module-btn">我的</button>
+          <button class="module-btn">项目</button>
+          <button class="module-btn">工具</button>
+          <button class="module-btn active">审批</button>
+          <button class="module-btn">客户</button>
+          <button class="module-btn">知识</button>
+          <button class="module-btn">律所</button>
+        </section>
+
+        <section class="content-view active" id="dashboard">
+          <div class="hero">
+            <div>
+              <div class="eyebrow">法律业务审批引擎</div>
+              <h2>为律所管控风险的同时，不拖慢业务。</h2>
+              <p>
+                这套原型把审批嵌入
+                <strong>客户准入 → 利冲 → 立项 → 报价/合同 → 文书外发 → 开票</strong>
+                主链路。
+              </p>
+            </div>
+            <div class="hero-actions">
+              <button class="primary-btn" data-jump="launch">新建审批</button>
+              <button class="ghost-btn" data-jump="approval-center">查看待办</button>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric-card">
+              <span>待我审批</span>
+              <strong>12</strong>
+              <small>高风险 3，超时 2</small>
+            </article>
+            <article class="metric-card">
+              <span>我发起未完成</span>
+              <strong>8</strong>
+              <small>退回待补材料 2</small>
+            </article>
+            <article class="metric-card">
+              <span>本周例外审批</span>
+              <strong>17</strong>
+              <small>折扣例外占比 23%</small>
+            </article>
+            <article class="metric-card">
+              <span>平均审批时长</span>
+              <strong>6.4h</strong>
+              <small>较上周下降 18%</small>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="panel">
+              <div class="panel-head">
+                <h3>高优先级审批</h3>
+                <button class="link-btn" data-jump="approval-center">全部查看</button>
+              </div>
+              <div class="priority-list" id="priority-list"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <h3>Phase 1 审批范围</h3>
+                <span class="tag">MVP</span>
+              </div>
+              <div class="phase-grid">
+                <div class="phase-item">新客户准入审批</div>
+                <div class="phase-item">利益冲突审批</div>
+                <div class="phase-item">新项目立项审批</div>
+                <div class="phase-item">报价审批</div>
+                <div class="phase-item">折扣/减免审批</div>
+                <div class="phase-item">合同条款偏离审批</div>
+                <div class="phase-item">文书外发审批</div>
+                <div class="phase-item">开票申请审批</div>
+              </div>
+            </article>
+
+            <article class="panel wide">
+              <div class="panel-head">
+                <h3>审批模块设计原则</h3>
+              </div>
+              <div class="principles">
+                <div>
+                  <strong>不做审批岛</strong>
+                  <p>审批必须从客户、项目、合同、文档详情页直接进入。</p>
+                </div>
+                <div>
+                  <strong>先业务，后流程</strong>
+                  <p>审批对象是业务对象，不是空审批单。</p>
+                </div>
+                <div>
+                  <strong>通过后自动动作</strong>
+                  <p>审批通过必须自动建项目、锁版本、回写应收或触发开票。</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-view" id="approval-center">
+          <div class="page-shell">
+            <aside class="approval-menu panel">
+              <div class="panel-head">
+                <h3>审批类型</h3>
+              </div>
+              <div class="menu-bucket active">所有审批类型（11）</div>
+              <div class="menu-group">
+                <h4>项目审批（5）</h4>
+                <button class="menu-link active" data-filter="立项审批">立项审批（2）</button>
+                <button class="menu-link" data-filter="文书外发审批">文书外发审批（2）</button>
+                <button class="menu-link" data-filter="结项审批">结项审批（1）</button>
+              </div>
+              <div class="menu-group">
+                <h4>风险审批（3）</h4>
+                <button class="menu-link" data-filter="新客户准入审批">客户准入（1）</button>
+                <button class="menu-link" data-filter="利益冲突审批">利益冲突（1）</button>
+                <button class="menu-link" data-filter="合同条款偏离审批">合同偏离（1）</button>
+              </div>
+              <div class="menu-group">
+                <h4>财务审批（3）</h4>
+                <button class="menu-link" data-filter="报价审批">报价审批（1）</button>
+                <button class="menu-link" data-filter="折扣/减免审批">折扣审批（1）</button>
+                <button class="menu-link" data-filter="开票申请审批">开票审批（1）</button>
+              </div>
+            </aside>
+
+            <div class="approval-main panel">
+              <div class="panel-head">
+                <div>
+                  <h3>审批中心</h3>
+                  <p>所有审批类型 | 共 11 条审批</p>
+                </div>
+                <button class="primary-btn" data-jump="launch">新建审批</button>
+              </div>
+
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <button class="toolbar-chip active">待我审批</button>
+                  <button class="toolbar-chip">所有发起人</button>
+                  <button class="toolbar-chip">日期筛选</button>
+                </div>
+                <div class="toolbar-right">
+                  <input id="queue-search" type="search" placeholder="搜索项目、客户、合同、审批编号" />
+                </div>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>审批类型</th>
+                      <th>项目名称</th>
+                      <th>重要信息</th>
+                      <th>发起人</th>
+                      <th>状态</th>
+                      <th>当前节点</th>
+                      <th>发起日期</th>
+                      <th>到达当前节点日期</th>
+                    </tr>
+                  </thead>
+                  <tbody id="approval-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-view" id="approval-detail">
+          <div class="detail-layout">
+            <article class="panel detail-main">
+              <div class="detail-header">
+                <div>
+                  <div class="detail-code">AP-20260819-001</div>
+                  <h3>对外法律意见/正式文书审批</h3>
+                </div>
+                <div class="status-row">
+                  <span class="tag danger">高风险</span>
+                  <span class="tag warning">审批中</span>
+                  <span class="tag neutral">紧急</span>
+                </div>
+              </div>
+
+              <div class="detail-grid">
+                <section class="detail-block">
+                  <h4>审批基本信息</h4>
+                  <dl>
+                    <div><dt>客户</dt><dd>北京新望资本有限公司</dd></div>
+                    <div><dt>项目</dt><dd>常年法律顾问 2026</dd></div>
+                    <div><dt>文书类型</dt><dd>专项合规意见备忘录</dd></div>
+                    <div><dt>外发对象</dt><dd>客户法务总监 + CFO</dd></div>
+                  </dl>
+                </section>
+                <section class="detail-block">
+                  <h4>风险摘要</h4>
+                  <ul class="risk-list">
+                    <li>涉及拟披露融资交易安排，需合伙人终审。</li>
+                    <li>文书中有“可行”结论，需核验事实基础与责任边界。</li>
+                    <li>客户要求当日发出，当前剩余 SLA 1 小时 20 分钟。</li>
+                  </ul>
+                </section>
+                <section class="detail-block wide">
+                  <h4>版本与附件</h4>
+                  <div class="file-row">
+                    <div class="file-card">
+                      <strong>Memo_V5_2026-08-19.docx</strong>
+                      <span>当前审批版本 | 已锁版候选</span>
+                    </div>
+                    <div class="file-card">
+                      <strong>事实底稿_董事会纪要.pdf</strong>
+                      <span>支撑材料 | 内部可见</span>
+                    </div>
+                    <div class="file-card">
+                      <strong>条款偏离说明.md</strong>
+                      <span>历史审批关联材料</span>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </article>
+
+            <aside class="panel detail-side">
+              <div class="panel-head">
+                <h3>审批流转</h3>
+                <span class="tag neutral">剩余 1h 20m</span>
+              </div>
+
+              <ol class="timeline">
+                <li class="done">起草律师提交版本</li>
+                <li class="done">复核律师专业复审</li>
+                <li class="done">项目负责人确认客户口径</li>
+                <li class="active">合伙人终审</li>
+                <li>锁版并允许发送</li>
+              </ol>
+
+              <div class="opinion-box">
+                <label for="opinion">审批意见</label>
+                <textarea id="opinion" placeholder="请输入审批意见或修改要求"></textarea>
+              </div>
+
+              <div class="action-stack">
+                <button class="primary-btn">通过并锁版</button>
+                <button class="ghost-btn">退回修改</button>
+                <button class="ghost-btn">转审</button>
+                <button class="ghost-btn">加签</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="content-view" id="launch">
+          <div class="launch-layout">
+            <article class="panel">
+              <div class="panel-head">
+                <h3>发起审批</h3>
+                <p>按业务对象发起，不做空审批单。</p>
+              </div>
+
+              <div class="launch-steps">
+                <div class="step active">1. 选择审批类型</div>
+                <div class="step">2. 关联业务对象</div>
+                <div class="step">3. 填写表单</div>
+                <div class="step">4. 预览审批链</div>
+                <div class="step">5. 提交</div>
+              </div>
+
+              <div class="form-grid">
+                <label>
+                  审批类型
+                  <select>
+                    <option>新项目立项审批</option>
+                    <option>利益冲突审批</option>
+                    <option>报价审批</option>
+                    <option>折扣/减免审批</option>
+                    <option>对外法律意见/正式文书审批</option>
+                    <option>开票申请审批</option>
+                  </select>
+                </label>
+                <label>
+                  关联客户
+                  <input type="text" value="北京新望资本有限公司" />
+                </label>
+                <label>
+                  关联项目
+                  <input type="text" value="常年法律顾问 2026" />
+                </label>
+                <label>
+                  风险等级
+                  <select>
+                    <option>高</option>
+                    <option>中</option>
+                    <option>低</option>
+                  </select>
+                </label>
+                <label class="wide">
+                  事项摘要
+                  <textarea>客户拟在今晚前对外发送融资合规说明，需审批当前意见备忘录 V5 版本。</textarea>
+                </label>
+              </div>
+            </article>
+
+            <aside class="panel launch-side">
+              <div class="panel-head">
+                <h3>预览审批链</h3>
+              </div>
+              <div class="chain-preview">
+                <div class="chain-node">系统校验：客户档案 / 历史利冲</div>
+                <div class="chain-node">复核律师审批</div>
+                <div class="chain-node">项目负责人审批</div>
+                <div class="chain-node emphasis">合伙人终审</div>
+                <div class="chain-node">通过后锁版并允许发送</div>
+              </div>
+              <div class="submit-box">
+                <div class="submit-meta">预计 SLA：1 个工作日</div>
+                <button class="primary-btn">提交审批</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="content-view" id="templates">
+          <div class="split-layout">
+            <article class="panel narrow">
+              <div class="panel-head">
+                <h3>审批模板</h3>
+              </div>
+              <div class="template-list">
+                <button class="template-item active">新客户准入审批</button>
+                <button class="template-item">利益冲突审批</button>
+                <button class="template-item">新项目立项审批</button>
+                <button class="template-item">报价审批</button>
+                <button class="template-item">文书外发审批</button>
+                <button class="template-item">开票申请审批</button>
+              </div>
+            </article>
+
+            <article class="panel wide">
+              <div class="panel-head">
+                <h3>模板详情</h3>
+                <div class="panel-actions">
+                  <button class="ghost-btn">保存草稿</button>
+                  <button class="primary-btn">发布新版本</button>
+                </div>
+              </div>
+
+              <div class="tab-strip">
+                <button class="tab-btn active">基础信息</button>
+                <button class="tab-btn">字段配置</button>
+                <button class="tab-btn">流程配置</button>
+                <button class="tab-btn">规则配置</button>
+                <button class="tab-btn">发布记录</button>
+              </div>
+
+              <div class="config-grid">
+                <div class="config-card">
+                  <h4>字段分组</h4>
+                  <ul>
+                    <li>基础信息</li>
+                    <li>业务信息</li>
+                    <li>风险与财务信息</li>
+                    <li>附件与说明</li>
+                  </ul>
+                </div>
+                <div class="config-card">
+                  <h4>必填规则</h4>
+                  <ul>
+                    <li>客户名称：必填</li>
+                    <li>风险等级：必填</li>
+                    <li>附件：至少 1 个</li>
+                    <li>紧急事项：原因必填</li>
+                  </ul>
+                </div>
+                <div class="config-card">
+                  <h4>默认动作</h4>
+                  <ul>
+                    <li>通过后自动建项目</li>
+                    <li>通过后自动锁版</li>
+                    <li>驳回后保留原审批轨迹</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-view" id="rules">
+          <div class="rules-layout">
+            <article class="panel wide">
+              <div class="panel-head">
+                <h3>审批规则引擎</h3>
+                <button class="primary-btn">新增规则</button>
+              </div>
+              <div class="rule-board">
+                <div class="rule-card">
+                  <div class="rule-title">报价审批升级规则</div>
+                  <p>当折扣比例 &gt; 20% 时，自动追加管理合伙人终审。</p>
+                  <span class="tag warning">金额阈值</span>
+                </div>
+                <div class="rule-card">
+                  <div class="rule-title">文书外发升级规则</div>
+                  <p>涉及融资、并购、诉讼敏感表述时，自动转高风险链路。</p>
+                  <span class="tag danger">高风险文书</span>
+                </div>
+                <div class="rule-card">
+                  <div class="rule-title">立项审批追加财务规则</div>
+                  <p>预算超 15 万，或超标准工时包时，追加财务审批。</p>
+                  <span class="tag neutral">预算控制</span>
+                </div>
+              </div>
+            </article>
+
+            <aside class="panel narrow">
+              <div class="panel-head">
+                <h3>可用条件源</h3>
+              </div>
+              <ul class="source-list">
+                <li>客户风险等级</li>
+                <li>项目类型</li>
+                <li>金额阈值</li>
+                <li>折扣比例</li>
+                <li>文书类型</li>
+                <li>是否命中利冲</li>
+                <li>是否高敏行业</li>
+              </ul>
+            </aside>
+          </div>
+        </section>
+
+        <section class="content-view" id="analytics">
+          <div class="analytics-grid">
+            <article class="panel">
+              <div class="panel-head">
+                <h3>效率分析</h3>
+              </div>
+              <div class="bar-list">
+                <div class="bar-row"><span>立项审批</span><div><i style="width: 68%"></i></div><strong>6.2h</strong></div>
+                <div class="bar-row"><span>文书外发</span><div><i style="width: 82%"></i></div><strong>8.4h</strong></div>
+                <div class="bar-row"><span>报价审批</span><div><i style="width: 43%"></i></div><strong>3.5h</strong></div>
+                <div class="bar-row"><span>开票审批</span><div><i style="width: 38%"></i></div><strong>2.9h</strong></div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <h3>风险分析</h3>
+              </div>
+              <div class="insight-stack">
+                <div class="insight-card">
+                  <strong>高风险审批占比 14%</strong>
+                  <p>主要集中在融资交易、合规意见、非标责任条款。</p>
+                </div>
+                <div class="insight-card">
+                  <strong>例外折扣审批 23%</strong>
+                  <p>两支团队明显高于均值，建议回看报价授权边界。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel wide">
+              <div class="panel-head">
+                <h3>治理结论</h3>
+              </div>
+              <div class="governance-grid">
+                <div class="governance-item">
+                  <span>审批瓶颈</span>
+                  <strong>合伙人终审节点</strong>
+                  <p>高风险文书集中积压，建议细分授权和预审模板。</p>
+                </div>
+                <div class="governance-item">
+                  <span>业务机会</span>
+                  <strong>续签折扣管控</strong>
+                  <p>可将折扣台账回写到客户经营分析，直接影响续签报价策略。</p>
+                </div>
+                <div class="governance-item">
+                  <span>产品后续</span>
+                  <strong>审批后自动动作</strong>
+                  <p>优先打通“通过即建项目”“锁版即归档”“开票即同步应收”。</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
