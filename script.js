@@ -89,8 +89,48 @@ const tableBody = document.getElementById("approval-table-body");
 const queueSearch = document.getElementById("queue-search");
 const menuLinks = document.querySelectorAll(".menu-link");
 const priorityList = document.getElementById("priority-list");
+const launchSteps = document.querySelectorAll("[data-launch-step]");
+const launchPanels = document.querySelectorAll("[data-launch-panel]");
+const launchPrev = document.getElementById("launch-prev");
+const launchNext = document.getElementById("launch-next");
+const launchSideAction = document.getElementById("launch-side-action");
+const launchSideTitle = document.getElementById("launch-side-title");
+const launchChainPreview = document.getElementById("launch-chain-preview");
+const launchSla = document.getElementById("launch-sla");
+
+const launchFields = {
+  type: document.getElementById("launch-approval-type"),
+  client: document.getElementById("launch-client"),
+  project: document.getElementById("launch-project"),
+  object: document.getElementById("launch-object"),
+  risk: document.getElementById("launch-risk"),
+  urgency: document.getElementById("launch-urgency"),
+  summary: document.getElementById("launch-summary")
+};
+
+const reviewTargets = {
+  type: document.querySelector('[data-review="type"]'),
+  client: document.querySelector('[data-review="client"]'),
+  project: document.querySelector('[data-review="project"]'),
+  object: document.querySelector('[data-review="object"]'),
+  risk: document.querySelector('[data-review="risk"]'),
+  urgency: document.querySelector('[data-review="urgency"]'),
+  summary: document.querySelector('[data-review="summary"]')
+};
+
+const launchStepRequirements = {
+  1: ["type"],
+  2: ["client", "project", "object"],
+  3: ["risk", "urgency", "summary"]
+};
+
+const launchDefaultValues = Object.fromEntries(
+  Object.entries(launchFields).map(([key, field]) => [key, field?.value || ""])
+);
 
 let activeFilter = "";
+let currentLaunchStep = 1;
+let launchSubmitted = false;
 
 function renderPriority() {
   priorityList.innerHTML = priorityItems
@@ -139,7 +179,11 @@ function renderTable() {
     .join("");
 }
 
-function setActiveView(id) {
+function setActiveView(id, options = {}) {
+  if (id === "launch" && options.resetLaunch) {
+    resetLaunchWizard();
+  }
+
   viewButtons.forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.view === id);
   });
@@ -148,12 +192,193 @@ function setActiveView(id) {
   });
 }
 
+function updateLaunchReview() {
+  Object.entries(launchFields).forEach(([key, field]) => {
+    if (!reviewTargets[key]) return;
+    reviewTargets[key].textContent = field.value.trim() || "-";
+  });
+}
+
+function isLaunchFieldComplete(key) {
+  const field = launchFields[key];
+  if (!field) return true;
+  return field.value.trim().length > 0;
+}
+
+function isLaunchStepComplete(step) {
+  const keys = launchStepRequirements[step] || [];
+  return keys.every(isLaunchFieldComplete);
+}
+
+function getLaunchMaxStep() {
+  if (!isLaunchStepComplete(1)) return 1;
+  if (!isLaunchStepComplete(2)) return 2;
+  if (!isLaunchStepComplete(3)) return 3;
+  return 5;
+}
+
+function getLaunchSla(type, risk, urgency) {
+  if (urgency === "紧急") return "预计 SLA：4 小时内";
+  if (risk === "高") return "预计 SLA：1 个工作日";
+  if (["报价审批", "折扣/减免审批", "开票申请审批"].includes(type)) {
+    return "预计 SLA：8 小时内";
+  }
+  return "预计 SLA：2 个工作日";
+}
+
+function getLaunchChain(type, risk) {
+  const nodes = ["系统校验：客户档案 / 历史利冲"];
+
+  if (type === "利益冲突审批") {
+    nodes.push("风控复核");
+  } else {
+    nodes.push("复核律师审批");
+  }
+
+  if (["报价审批", "折扣/减免审批", "开票申请审批"].includes(type)) {
+    nodes.push("财务负责人审批");
+  } else {
+    nodes.push("项目负责人审批");
+  }
+
+  if (risk === "高" || ["利益冲突审批", "对外法律意见/正式文书审批"].includes(type)) {
+    nodes.push("合伙人终审");
+  } else {
+    nodes.push("团队负责人审批");
+  }
+
+  if (type === "新项目立项审批") {
+    nodes.push("通过后自动建项目并生成审批记录");
+  } else if (type === "开票申请审批") {
+    nodes.push("通过后同步开票申请与应收记录");
+  } else if (type === "对外法律意见/正式文书审批") {
+    nodes.push("通过后锁版并允许发送");
+  } else {
+    nodes.push("通过后自动留痕并回写业务对象");
+  }
+
+  return nodes;
+}
+
+function updateLaunchChainPreview() {
+  const type = launchFields.type?.value.trim() || "";
+  const risk = launchFields.risk?.value.trim() || "";
+  const urgency = launchFields.urgency?.value.trim() || "";
+  const nodes = getLaunchChain(type, risk);
+  const approvalNodes = nodes.slice(0, -1);
+  const finalNode = nodes[nodes.length - 1];
+
+  if (launchChainPreview) {
+    launchChainPreview.innerHTML = [
+      ...approvalNodes.map(
+        (node, index) =>
+          `<div class="chain-node${index === approvalNodes.length - 1 ? " emphasis" : ""}">${node}</div>`
+      ),
+      `<div class="chain-node">${finalNode}</div>`
+    ].join("");
+  }
+
+  if (launchSla) {
+    launchSla.textContent = getLaunchSla(type, risk, urgency);
+  }
+}
+
+function validateLaunchStep(step) {
+  return isLaunchStepComplete(step);
+}
+
+function resetLaunchWizard() {
+  launchSubmitted = false;
+  currentLaunchStep = 1;
+
+  Object.entries(launchDefaultValues).forEach(([key, value]) => {
+    if (launchFields[key]) {
+      launchFields[key].value = value;
+    }
+  });
+
+  updateLaunchUi();
+}
+
+function updateLaunchUi() {
+  const maxStep = getLaunchMaxStep();
+
+  if (!launchSubmitted && currentLaunchStep > maxStep) {
+    currentLaunchStep = maxStep;
+  }
+
+  launchSteps.forEach((stepBtn) => {
+    const step = Number(stepBtn.dataset.launchStep);
+    stepBtn.classList.toggle("active", step === currentLaunchStep);
+    stepBtn.classList.toggle("done", step < currentLaunchStep);
+    stepBtn.disabled = launchSubmitted || step > maxStep;
+  });
+
+  launchPanels.forEach((panel) => {
+    panel.classList.toggle("active", Number(panel.dataset.launchPanel) === currentLaunchStep);
+  });
+
+  if (launchPrev) {
+    launchPrev.disabled = currentLaunchStep === 1 || launchSubmitted;
+  }
+
+  const isFinalStep = currentLaunchStep === 5;
+  const isPreviewStep = currentLaunchStep >= 4;
+  const canAdvance = launchSubmitted
+    ? false
+    : currentLaunchStep >= 4 || validateLaunchStep(currentLaunchStep);
+
+  if (launchNext) {
+    launchNext.textContent = launchSubmitted ? "已提交" : isFinalStep ? "提交审批" : "下一步";
+    launchNext.disabled = !canAdvance;
+  }
+
+  if (launchSideAction) {
+    launchSideAction.textContent = launchSubmitted ? "已提交" : isFinalStep ? "提交审批" : "下一步";
+    launchSideAction.disabled = !canAdvance;
+  }
+
+  if (launchSideTitle) {
+    launchSideTitle.textContent = launchSubmitted ? "审批已提交" : isPreviewStep ? "预览审批链" : "审批链预览";
+  }
+
+  updateLaunchReview();
+  updateLaunchChainPreview();
+}
+
+function setLaunchStep(step) {
+  const maxStep = launchSubmitted ? 5 : getLaunchMaxStep();
+  currentLaunchStep = Math.min(maxStep, Math.max(1, step));
+  updateLaunchUi();
+}
+
+function advanceLaunchStep() {
+  if (launchSubmitted) return;
+
+  if (currentLaunchStep < 5) {
+    if (!validateLaunchStep(currentLaunchStep)) {
+      updateLaunchUi();
+      return;
+    }
+
+    setLaunchStep(currentLaunchStep + 1);
+    return;
+  }
+
+  launchSubmitted = true;
+  updateLaunchUi();
+}
+
 viewButtons.forEach((btn) => {
-  btn.addEventListener("click", () => setActiveView(btn.dataset.view));
+  btn.addEventListener("click", () => {
+    setActiveView(btn.dataset.view, { resetLaunch: btn.dataset.view === "launch" && launchSubmitted });
+  });
 });
 
 jumpButtons.forEach((btn) => {
-  btn.addEventListener("click", () => setActiveView(btn.dataset.jump));
+  btn.addEventListener("click", () => {
+    setActiveView(btn.dataset.jump, { resetLaunch: btn.dataset.jump === "launch" });
+  });
 });
 
 menuLinks.forEach((btn) => {
@@ -167,5 +392,26 @@ menuLinks.forEach((btn) => {
 
 queueSearch?.addEventListener("input", renderTable);
 
+launchSteps.forEach((stepBtn) => {
+  stepBtn.addEventListener("click", () => {
+    const targetStep = Number(stepBtn.dataset.launchStep);
+    if (launchSubmitted || targetStep > getLaunchMaxStep()) return;
+    setLaunchStep(targetStep);
+  });
+});
+
+launchPrev?.addEventListener("click", () => {
+  setLaunchStep(currentLaunchStep - 1);
+});
+
+launchNext?.addEventListener("click", advanceLaunchStep);
+launchSideAction?.addEventListener("click", advanceLaunchStep);
+
+Object.values(launchFields).forEach((field) => {
+  field?.addEventListener("input", updateLaunchUi);
+  field?.addEventListener("change", updateLaunchUi);
+});
+
 renderPriority();
 renderTable();
+updateLaunchUi();
