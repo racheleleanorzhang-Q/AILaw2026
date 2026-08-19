@@ -329,6 +329,13 @@ button {
   box-shadow: 0 12px 26px rgba(214, 128, 44, 0.24);
 }
 
+.primary-btn:disabled,
+.ghost-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  box-shadow: none;
+}
+
 .ghost-btn {
   border: 1px solid rgba(177, 157, 136, 0.3);
   background: rgba(255, 255, 255, 0.8);
@@ -756,12 +763,96 @@ dd {
   border-radius: 999px;
   background: rgba(248, 242, 235, 0.92);
   color: var(--muted);
+  border: 1px solid transparent;
 }
 
 .step.active {
   background: rgba(214, 128, 44, 0.14);
   color: #7f4b1c;
   font-weight: 700;
+}
+
+.step.done {
+  color: var(--success);
+  background: rgba(74, 162, 123, 0.12);
+}
+
+.launch-step-panels {
+  display: grid;
+  gap: 18px;
+}
+
+.launch-panel {
+  display: none;
+}
+
+.launch-panel.active {
+  display: block;
+}
+
+.wizard-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.review-card,
+.submit-review-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(177, 157, 136, 0.16);
+}
+
+.review-card h4,
+.submit-review-card h4 {
+  margin: 0 0 16px;
+}
+
+.review-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.review-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(177, 157, 136, 0.12);
+}
+
+.review-list li span {
+  color: var(--muted);
+  text-align: right;
+}
+
+.review-summary {
+  margin-top: 18px;
+}
+
+.review-summary p,
+.submit-review-card p {
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 8px 0 0;
+}
+
+.confirm-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.confirm-grid div {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(214, 128, 44, 0.08);
+  color: #7f4b1c;
 }
 
 .form-grid {
@@ -970,6 +1061,15 @@ dd {
   }
 
   dd {
+    text-align: left;
+  }
+
+  .wizard-actions,
+  .review-list li {
+    flex-direction: column;
+  }
+
+  .review-list li span {
     text-align: left;
   }
 }
