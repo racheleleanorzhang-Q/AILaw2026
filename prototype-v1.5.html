@@ -749,6 +749,45 @@
         color: #6ed8df;
         font-size: 18px;
       }
+      .project-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .project-title-row h1 {
+        margin: 0;
+      }
+      .flow-info {
+        position: relative;
+        z-index: 6;
+      }
+      .flow-info-trigger {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #cfd4df;
+        border-radius: 50%;
+        background: #fff;
+        color: #6f7890;
+        font: 700 13px Georgia, serif;
+        cursor: help;
+      }
+      .flow-popover {
+        display: none;
+        position: absolute;
+        top: 32px;
+        left: 0;
+        width: 1000px;
+        max-width: calc(100vw - 310px);
+        padding-top: 8px;
+        filter: drop-shadow(0 14px 28px #1c20352b);
+      }
+      .flow-info:hover .flow-popover,
+      .flow-info:focus-within .flow-popover {
+        display: block;
+      }
+      .flow-popover .flow {
+        margin: 0;
+      }
       .workgrid {
         display: grid;
         grid-template-columns: 1.3fr 0.7fr;
@@ -1887,34 +1926,28 @@
           <div class="view" id="projects">
             <div class="project-head">
               <div>
-                <h1>项目清单</h1>
+                <div class="project-title-row">
+                  <h1>项目清单</h1>
+                  <span class="flow-info">
+                    <button class="flow-info-trigger" aria-label="查看项目生成流程">i</button>
+                    <span class="flow-popover">
+                      <span class="flow">
+                        <span class="flowstep"><b>业务线索</b><small>明确报价并持续跟进</small></span>
+                        <span class="flowarrow">→</span>
+                        <span class="flowstep"><b>客户确认</b><small>带入最终报价版本</small></span>
+                        <span class="flowarrow">→</span>
+                        <span class="flowstep"><b>项目承接申请</b><small>审核客户、范围与风险</small></span>
+                        <span class="flowarrow">→</span>
+                        <span class="flowstep"><b>合同签署</b><small>上传双签版并核验</small></span>
+                        <span class="flowarrow">→</span>
+                        <span class="flowstep"><b>自动生成项目</b><small>进入已立项管理</small></span>
+                      </span>
+                    </span>
+                  </span>
+                </div>
                 <p>
                   统一查看项目申请的草稿、审批中、已通过、已拒绝和已撤回记录
                 </p>
-              </div>
-              <button class="btn primary" onclick="openForm()">
-                ＋ 发起项目承接申请
-              </button>
-            </div>
-            <div class="flow">
-              <div class="flowstep">
-                <b>业务线索</b><small>明确报价并持续跟进</small>
-              </div>
-              <span class="flowarrow">→</span>
-              <div class="flowstep">
-                <b>客户确认</b><small>带入最终报价版本</small>
-              </div>
-              <span class="flowarrow">→</span>
-              <div class="flowstep">
-                <b>项目承接申请</b><small>审核客户、范围与风险</small>
-              </div>
-              <span class="flowarrow">→</span>
-              <div class="flowstep">
-                <b>合同签署</b><small>上传双签版并核验</small>
-              </div>
-              <span class="flowarrow">→</span>
-              <div class="flowstep">
-                <b>自动生成项目</b><small>进入已立项管理</small>
               </div>
             </div>
             <div class="stats">
@@ -1947,7 +1980,7 @@
             <div class="panel">
               <div class="project-tools">
                 <button class="btn primary" onclick="openForm()">
-                  ＋ 发起承接申请</button
+                  ＋ 发起立项申请</button
                 ><button class="btn">⇩ 导入</button
                 ><button class="btn">⇧ 导出</button
                 ><input
@@ -3085,40 +3118,43 @@
     <div class="formpage" id="formpage">
       <header class="formtop">
         <div>
-          <small>项目管理 / 项目清单 / 发起申请</small>
-          <h2 style="margin: 3px 0 0">新建项目承接申请</h2>
+          <small id="projectFormBreadcrumb">项目管理 / 项目清单 / 发起申请</small>
+          <h2 id="projectFormTitle" style="margin: 3px 0 0">新建立项申请</h2>
         </div>
         <button class="close" onclick="closeForm()">×</button>
       </header>
       <section class="formcard">
-        <h2>项目承接申请</h2>
-        <div class="hint">
+        <h2 id="projectFormSectionTitle">项目立项申请</h2>
+        <div class="hint" id="projectFormHint">
           从已确认合作的业务线索发起，客户、最终报价、服务范围和跟进负责人自动带入；此时尚未生成正式项目。
         </div>
         <div class="formgrid">
-          <label>项目编号<input disabled value="— 自动生成 —" /></label
+          <label>申请编号<input id="projectFormNo" disabled value="— 自动生成 —" /></label
           ><label
             >项目所属主体 <span class="req">*</span
-            ><select>
+            ><select id="projectFormEntity">
               <option>请选择</option>
               <option>文森律师事务所</option>
             </select></label
           ><label
-            >立项时间 <span class="req">*</span
-            ><input type="date" value="2026-08-21" /></label
+            >申请时间 <span class="req">*</span
+            ><input id="projectFormDate" type="date" value="2026-08-21" /></label
           ><label
             >客户名称 <span class="req">*</span
-            ><select>
+            ><select id="projectFormClient">
               <option>请选择客户</option>
               <option>上海澄远智能科技有限公司</option>
               <option>杭州云川数字科技有限公司</option>
+              <option>苏州博信医疗器械有限公司</option>
+              <option>顾嘉言</option>
+              <option>南京卓越商业管理有限公司</option>
             </select></label
           ><label
             >项目名称 <span class="req">*</span
-            ><input placeholder="请输入项目名称" /></label
+            ><input id="projectFormName" placeholder="请输入项目名称" /></label
           ><label
             >项目类型 <span class="req">*</span
-            ><select>
+            ><select id="projectFormType">
               <option>请选择</option>
               <option>诉讼 / 仲裁</option>
               <option>非诉讼</option>
@@ -3127,43 +3163,44 @@
             </select></label
           ><label
             >项目负责人 <span class="req">*</span
-            ><select>
+            ><select id="projectFormOwner">
               <option>请选择</option>
               <option>周明远</option>
               <option>叶青</option>
+              <option>苏航</option>
             </select></label
           ><label
             >预计合同金额 <span class="req">*</span
-            ><input type="number" placeholder="请输入金额" /></label
+            ><input id="projectFormAmount" type="number" placeholder="请输入金额" /></label
           ><label
-            >计划开始时间 <span class="req">*</span><input type="date" /></label
+            >计划开始时间 <span class="req">*</span><input id="projectFormStart" type="date" /></label
           ><label
-            >计划结束时间 <span class="req">*</span><input type="date" /></label
-          ><label>计划天数<input disabled value="选择日期后自动计算" /></label
+            >计划结束时间 <span class="req">*</span><input id="projectFormEnd" type="date" /></label
+          ><label>计划天数<input id="projectFormDays" disabled value="选择日期后自动计算" /></label
           ><label
-            >项目协办人<select>
+            >项目协办人<select id="projectFormAssistant">
               <option>请选择，可多选</option>
               <option>苏航</option>
             </select></label
           ><label class="wide"
             >事项简介 <span class="req">*</span
-            ><textarea
+            ><textarea id="projectFormSummary"
               placeholder="请输入项目背景、服务范围及关键目标"
             ></textarea></label
           ><label class="wide"
             >附件
-            <div class="upload">
+            <div class="upload" id="projectFormUpload">
               ⌕ 上传文件　<span style="color: #a3a8b5">支持拖拽或粘贴文件</span>
             </div></label
           ><label class="wide"
-            >备注<textarea placeholder="请输入补充说明"></textarea>
+            >备注<textarea id="projectFormNote" placeholder="请输入补充说明"></textarea>
           </label>
         </div>
         <div class="formactions">
-          <button class="btn" onclick="closeForm()">取消</button>
-          <button class="btn">保存草稿</button>
-          <button class="btn primary" onclick="submitProject()">
-            提交承接审批
+          <button class="btn" id="projectFormCancelButton" onclick="closeForm()">取消</button>
+          <button class="btn" id="projectFormDraftButton" onclick="saveProjectDraft()">保存草稿</button>
+          <button class="btn primary" id="projectFormSubmitButton" onclick="submitProject()">
+            提交立项审批
           </button>
         </div>
       </section>
@@ -3934,7 +3971,7 @@
           "¥ 65,000",
           "2026-08-18",
           "2026-09-18",
-          "审批中",
+          "草稿",
         ],
       ];
       const activeProjects = [
@@ -4178,15 +4215,23 @@
       function renderProjects() {
         projectRows.innerHTML = projects
           .map(
-            (p) =>
+            (p, i) =>
               `<tr><td><button class="link">${p[0]}</button></td>${p
                 .slice(1, 10)
                 .map((x) => `<td>${x}</td>`)
                 .join(
                   "",
-                )}<td><span class="tag ${p[10] == "已通过" ? "green" : p[10] == "审批中" ? "amber" : "blue"} statusdot">${p[10]}</span></td><td><button class="link" onclick="toast('已打开项目申请详情')">详情</button>　<button class="link" onclick="toast('${p[10] == "审批中" ? "审批中的申请不可编辑" : "已打开项目申请"}')">${p[10] == "已通过" ? "查看审批" : "编辑"}</button></td></tr>`,
+                )}<td><span class="tag ${p[10] == "已通过" ? "green" : p[10] == "审批中" ? "amber" : "blue"} statusdot">${p[10]}</span></td><td>${projectApplicationActions(i, p[10])}</td></tr>`,
           )
           .join("");
+      }
+      function projectApplicationActions(index, status) {
+        const detail = `<button class="link" onclick="openProjectApplication(${index},'detail')">详情</button>`;
+        if (status == "审批中")
+          return `${detail}　<button class="link" onclick="withdrawProjectApplication(${index})">撤回后编辑</button>`;
+        if (["草稿", "已拒绝"].includes(status))
+          return `${detail}　<button class="link" onclick="openProjectApplication(${index},'edit')">编辑</button>`;
+        return `${detail}　<button class="link" onclick="showPage('approvals');toast('已定位该立项审批记录')">查看审批</button>`;
       }
       function renderActiveProjects() {
         activeProjectRows.innerHTML = activeProjects.length
@@ -5136,15 +5181,178 @@
         showPage("contracts");
         toast("客户已确认合作，已带入最终报价并创建合同审批草稿");
       }
+      let projectFormMode = "create";
+      let activeProjectApplicationIndex = -1;
+      function setProjectFormReadonly(readonly) {
+        document
+          .querySelectorAll("#formpage .formgrid input, #formpage .formgrid select, #formpage .formgrid textarea")
+          .forEach((field) => (field.disabled = readonly));
+        projectFormNo.disabled = true;
+        projectFormDays.disabled = true;
+        projectFormUpload.style.pointerEvents = readonly ? "none" : "auto";
+        projectFormUpload.style.opacity = readonly ? 0.65 : 1;
+        projectFormDraftButton.style.display = readonly ? "none" : "inline-block";
+        projectFormSubmitButton.style.display = readonly ? "none" : "inline-block";
+        projectFormCancelButton.textContent = readonly ? "关闭" : "取消";
+      }
+      function resetProjectForm() {
+        projectFormNo.value = "— 自动生成 —";
+        projectFormEntity.value = "文森律师事务所";
+        projectFormDate.value = "2026-08-22";
+        projectFormClient.value = "请选择客户";
+        projectFormName.value = "";
+        projectFormType.value = "请选择";
+        projectFormOwner.value = "请选择";
+        projectFormAmount.value = "";
+        projectFormStart.value = "";
+        projectFormEnd.value = "";
+        projectFormDays.value = "选择日期后自动计算";
+        projectFormAssistant.value = "请选择，可多选";
+        projectFormSummary.value = "";
+        projectFormNote.value = "";
+      }
       function openForm() {
+        projectFormMode = "create";
+        activeProjectApplicationIndex = -1;
+        resetProjectForm();
+        setProjectFormReadonly(false);
+        projectFormBreadcrumb.textContent = "项目管理 / 项目清单 / 发起申请";
+        projectFormTitle.textContent = "新建立项申请";
+        projectFormSectionTitle.textContent = "项目立项申请";
+        projectFormHint.textContent =
+          "从已确认合作的业务线索发起，客户、最终报价、服务范围和跟进负责人自动带入；此时尚未生成正式项目。";
+        projectFormSubmitButton.textContent = "提交立项审批";
         formpage.classList.add("show");
+      }
+      function openProjectApplication(index, mode = "detail") {
+        const project = projects[index];
+        if (!project) return;
+        if (
+          mode == "edit" &&
+          !["草稿", "已拒绝"].includes(project[10])
+        ) {
+          toast(
+            project[10] == "审批中"
+              ? "审批中的申请需先撤回再编辑"
+              : "已通过申请不可修改，请在正式项目中发起变更",
+          );
+          return;
+        }
+        projectFormMode = mode;
+        activeProjectApplicationIndex = index;
+        setProjectFormReadonly(mode == "detail");
+        projectFormNo.value = project[1];
+        projectFormEntity.value = "文森律师事务所";
+        projectFormDate.value = project[2];
+        projectFormClient.value = project[5];
+        projectFormName.value = project[3];
+        projectFormType.value = project[4];
+        projectFormOwner.value = project[6];
+        projectFormAmount.value = project[7].replace(/[^\d]/g, "");
+        projectFormStart.value = project[8];
+        projectFormEnd.value = project[9];
+        const days = Math.max(
+          1,
+          Math.ceil(
+            (new Date(project[9]) - new Date(project[8])) / 86400000,
+          ),
+        );
+        projectFormDays.value = days + " 天";
+        projectFormAssistant.value = "苏航";
+        projectFormSummary.value = `${project[3]}相关法律服务，包括客户需求确认、风险核查、文件审查及成果交付。`;
+        projectFormNote.value = `当前申请状态：${project[10]}。`;
+        projectFormBreadcrumb.textContent = `项目管理 / 项目清单 / ${mode == "detail" ? "申请详情" : "编辑申请"}`;
+        projectFormTitle.textContent =
+          mode == "detail" ? "立项申请详情" : "编辑立项申请";
+        projectFormSectionTitle.textContent = "项目立项申请";
+        projectFormHint.textContent =
+          mode == "detail"
+            ? `当前为只读详情，申请状态：${project[10]}。`
+            : "已回写原立项申请信息，修改后可保存草稿或重新提交审批。";
+        projectFormSubmitButton.textContent = "重新提交立项审批";
+        formpage.classList.add("show");
+      }
+      function withdrawProjectApplication(index) {
+        if (!projects[index] || projects[index][10] != "审批中") return;
+        projects[index][10] = "草稿";
+        renderProjects();
+        openProjectApplication(index, "edit");
+        toast("立项申请已撤回，可修改后重新提交");
       }
       function closeForm() {
         formpage.classList.remove("show");
       }
-      function submitProject() {
+      function writeProjectFormToApplication(project, status) {
+        project[0] = `立项申请 · ${projectFormDate.value} 15:30`;
+        project[2] = projectFormDate.value;
+        project[3] = projectFormName.value.trim();
+        project[4] = projectFormType.value;
+        project[5] = projectFormClient.value;
+        project[6] = projectFormOwner.value;
+        project[7] = "¥ " + Number(projectFormAmount.value || 0).toLocaleString();
+        project[8] = projectFormStart.value;
+        project[9] = projectFormEnd.value;
+        project[10] = status;
+      }
+      function saveProjectDraft() {
+        if (projectFormMode == "detail") return;
+        if (projectFormMode == "create") {
+          projects.unshift([
+            "立项申请 · 2026-08-22 15:30",
+            "WS202608PZ0019",
+            "2026-08-22",
+            projectFormName.value.trim() || "未命名项目",
+            projectFormType.value,
+            projectFormClient.value,
+            projectFormOwner.value,
+            "¥ " + Number(projectFormAmount.value || 0).toLocaleString(),
+            projectFormStart.value,
+            projectFormEnd.value,
+            "草稿",
+          ]);
+        } else {
+          writeProjectFormToApplication(
+            projects[activeProjectApplicationIndex],
+            "草稿",
+          );
+        }
         closeForm();
-        toast("项目承接申请已提交，等待办公室主任审批");
+        renderProjects();
+        toast("立项申请草稿已保存");
+      }
+      function submitProject() {
+        if (
+          !projectFormName.value.trim() ||
+          projectFormClient.value == "请选择客户" ||
+          projectFormType.value == "请选择" ||
+          projectFormOwner.value == "请选择"
+        ) {
+          toast("请完整填写客户、项目名称、类型和负责人");
+          return;
+        }
+        if (projectFormMode == "create") {
+          projects.unshift([
+            "立项申请 · 2026-08-22 15:30",
+            "WS202608PZ0019",
+            projectFormDate.value,
+            projectFormName.value.trim(),
+            projectFormType.value,
+            projectFormClient.value,
+            projectFormOwner.value,
+            "¥ " + Number(projectFormAmount.value || 0).toLocaleString(),
+            projectFormStart.value,
+            projectFormEnd.value,
+            "审批中",
+          ]);
+        } else if (projectFormMode == "edit") {
+          writeProjectFormToApplication(
+            projects[activeProjectApplicationIndex],
+            "审批中",
+          );
+        }
+        closeForm();
+        renderProjects();
+        toast("立项申请已提交，等待办公室主任审批");
       }
       function toast(s) {
         const t = document.getElementById("toast");
