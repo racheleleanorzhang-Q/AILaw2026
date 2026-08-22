@@ -1496,6 +1496,9 @@
         flex-wrap: wrap;
       }
       .approval-state-tabs {
+        margin-top: 0;
+      }
+      .approval-type-tabs {
         margin-top: 12px;
       }
       .approval-type-tabs button,
@@ -2642,9 +2645,6 @@
                 <h1>流程审批</h1>
                 <p>统一查看和处理客户、报价、项目及合同审批流程</p>
               </div>
-              <button class="btn" onclick="switchApprovalView('mine')">
-                查看我的申请
-              </button>
             </div>
             <div class="panel approval-workbench">
               <div class="approval-main-tabs">
@@ -2656,6 +2656,7 @@
                 </button>
               </div>
               <div class="approval-filters">
+                <div class="approval-state-tabs" id="approvalStateTabs"></div>
                 <div class="approval-type-tabs" id="approvalTypeTabs">
                   <button class="on" data-type="all" onclick="setApprovalType('all',this)">所有审批类型</button>
                   <button data-type="customer" onclick="setApprovalType('customer',this)">客户准入审批</button>
@@ -2663,7 +2664,6 @@
                   <button data-type="project" onclick="setApprovalType('project',this)">项目审批</button>
                   <button data-type="contract" onclick="setApprovalType('contract',this)">合同审批</button>
                 </div>
-                <div class="approval-state-tabs" id="approvalStateTabs"></div>
               </div>
               <div class="approval-list-head">
                 <span id="approvalListTitle">待办流程</span>
