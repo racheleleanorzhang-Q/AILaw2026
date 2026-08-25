@@ -134,7 +134,8 @@
         const a=approvalById(pickerApproval),name=d.getElementById('v434PersonSelect').value;if(!a||!name)return;
         if(pickerAction==='countersign')a.countersigners.push({name,status:'待会签'});else a.ccRecipients.push(name);
         a.v434Actions.unshift({action:pickerAction==='countersign'?`添加会签人：${name}`:`抄送给：${name}`,operator:a.view==='todo'?a.currentApprover:a.applicant,time:'刚刚'});
-        w.closeV434PersonPicker();w.renderV42Approvals();w.openV42Approval(a.id);w.toast(pickerAction==='countersign'?'会签任务已发送':'已发送抄送消息');
+        w.v434Notifications.unshift({title:pickerAction==='countersign'?'新增会签任务':'流程抄送提醒',content:pickerAction==='countersign'?`你被添加为“${a.title}”的会签人，请完成审批。`:`“${a.title}”已抄送给你，可进入流程查看详情。`,receiver:name,time:'刚刚'});
+        renderNotifications();w.closeV434PersonPicker();w.renderV42Approvals();w.openV42Approval(a.id);w.toast(pickerAction==='countersign'?'会签任务已发送':'已发送抄送消息');
       };
 
       w.urgeV434Approval=function(id){
