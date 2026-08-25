@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>文森 AI 管理系统 · 原型 V4.2.2</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f6f7fb}iframe{width:100%;height:100%;border:0;display:block}.boot{position:fixed;inset:0;z-index:2;display:grid;place-items:center;background:#f6f7fb;color:#667085;font:14px Arial,"Microsoft YaHei",sans-serif}.boot b{display:block;margin-bottom:6px;color:#182033}
+  </style>
+</head>
+<body>
+  <div class="boot" id="boot"><div><b>文森 AI 管理系统 V4.2.2</b>正在加载布局优化版本…</div></div>
+  <iframe id="v422base" src="prototype-v4.2.html" title="文森 AI 管理系统 V4.2.2"></iframe>
+  <script>
+  (()=>{
+    const host=document.getElementById('v422base');
+    function locate(attempt=0){
+      try{
+        const a=host.contentDocument?.getElementById('v42base'),b=a?.contentDocument?.getElementById('v412base'),c=b?.contentDocument?.getElementById('v41base'),e=c?.contentDocument?.getElementById('v4base'),app=e?.contentDocument?.getElementById('base');
+        if(app?.contentDocument?.getElementById('v41OppSearch')&&app.contentDocument.getElementById('v42WorkModal')){applyV422(app.contentWindow,app.contentDocument);return}
+      }catch(error){console.warn('V4.2.2 locating app',error)}
+      if(attempt<120)setTimeout(()=>locate(attempt+1),150);
+    }
+    host.addEventListener('load',()=>locate());
+    function applyV422(w,d){
+      if(d.getElementById('v422Ready'))return;const marker=d.createElement('i');marker.id='v422Ready';marker.hidden=true;d.body.appendChild(marker);document.getElementById('boot').style.display='none';d.title='文森 AI 管理系统 · 原型 V4.2.2';
+      const grids=[['v41OppSearch','v422-filter-3'],['v41ContractSearch','v422-filter-2'],['v42ProjectSearch','v422-filter-3'],['v42ApprovalSearch','v422-filter-3']];grids.forEach(([id,cls])=>d.getElementById(id)?.parentElement?.classList.add(cls));
+      const css=d.createElement('style');css.id='v422Styles';css.textContent=`
+        .v422-filter-2,.v422-filter-3{display:grid!important;align-items:center;gap:12px!important;width:100%;box-sizing:border-box}.v422-filter-2{grid-template-columns:repeat(2,minmax(0,1fr))}.v422-filter-3{grid-template-columns:repeat(3,minmax(0,1fr))}.v422-filter-2>*,.v422-filter-3>*{width:100%!important;min-width:0!important;max-width:none!important;box-sizing:border-box;height:42px}
+        #v42WorkModal.overlay,#v42FlowModal.overlay{box-sizing:border-box;align-items:center!important;justify-content:center!important;padding:24px!important;overflow:auto!important}
+        #v42WorkModal .modal,#v42FlowModal .modal{position:relative!important;display:flex!important;flex-direction:column!important;width:min(760px,calc(100vw - 48px))!important;max-width:760px!important;max-height:calc(100vh - 48px)!important;margin:auto!important;overflow:hidden!important;box-sizing:border-box!important}
+        #v42WorkModal .modalhead,#v42FlowModal .modalhead{position:relative!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:16px!important;flex:0 0 auto!important}
+        #v42WorkModal .modalhead .close,#v42FlowModal .modalhead .close{position:static!important;inset:auto!important;transform:none!important;flex:0 0 auto!important;margin:0!important}
+        #v42WorkModal .modalbody,#v42FlowModal .modalbody{min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important}
+        #v42WorkModal .modalfoot,#v42FlowModal .modalfoot{position:static!important;display:flex!important;justify-content:flex-end!important;gap:8px!important;flex:0 0 auto!important;flex-wrap:wrap!important}
+        @media(max-width:900px){.v422-filter-2,.v422-filter-3{grid-template-columns:1fr!important}.v422-filter-2>*,.v422-filter-3>*{height:44px}#v42WorkModal.overlay,#v42FlowModal.overlay{padding:12px!important;align-items:flex-start!important}#v42WorkModal .modal,#v42FlowModal .modal{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;max-height:calc(100vh - 24px)!important}.v42-formgrid{grid-template-columns:1fr!important}.v42-formgrid .wide{grid-column:auto!important}#v42FlowTypes{grid-template-columns:repeat(2,minmax(0,1fr))!important}#v42WorkModal .modalfoot .btn,#v42FlowModal .modalfoot .btn{flex:1 1 auto!important}}
+      `;d.head.appendChild(css);
+    }
+  })();
+  </script>
+</body>
+</html>
