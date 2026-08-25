@@ -20,12 +20,13 @@
     try{
       const v4Frame=hostFrame.contentDocument?.getElementById('v4base');
       const appFrame=v4Frame?.contentDocument?.getElementById('base');
-      if(appFrame?.contentDocument?.body){initV41(appFrame.contentWindow,appFrame.contentDocument);return}
+      if(appFrame?.contentDocument?.body&&initV41(appFrame.contentWindow,appFrame.contentDocument)!==false)return
     }catch(error){console.warn('V4.1 locating app',error)}
     if(attempt<60)setTimeout(()=>findApp(attempt+1),150);
   }
   hostFrame.addEventListener('load',()=>findApp());
   function initV41(w,d){
+    if(!d.getElementById('guide')||!d.getElementById('dashboard')||!d.getElementById('leads')||!d.getElementById('contracts'))return false;
     if(d.getElementById('v41ContractCreatePage'))return;
     document.getElementById('boot').style.display='none';
     d.title='文森 AI 管理系统 · 原型 V4.1';
@@ -83,8 +84,19 @@
     const oldCloseContractDetail=w.closeContractDetail;w.closeContractDetail=function(event){const drawer=d.getElementById('contractDetailDrawer');if(drawer.classList.contains('v41-simple-detail')){if(!event||event.target===drawer){drawer.classList.remove('show','v41-simple-detail')}return}oldCloseContractDetail(event)};
     w.initiateContract=function(opportunityId){w.openV41ContractCreate('opp:'+opportunityId)};
 
-    const oldShow=w.showPage;w.showPage=function(id){oldShow(id);if(id==='leads')w.renderV41Opportunities();if(id==='contracts')w.renderV41Contracts()};
+    const oldShow=w.showPage;w.showPage=function(id){
+      if(id==='leads'||id==='contracts'){
+        d.querySelectorAll('.view').forEach(x=>x.classList.remove('show'));
+        d.getElementById(id).classList.add('show');
+        d.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));
+        const crumb=d.getElementById('crumb');if(crumb)crumb.innerHTML='AI 业务中心　/　<b>'+(id==='leads'?'商机管理':'合同管理')+'</b>';
+        if(id==='leads')w.renderV41Opportunities();else w.renderV41Contracts();
+        w.scrollTo(0,0);return;
+      }
+      oldShow(id);
+    };
     w.renderV41Opportunities();w.renderV41Contracts();
+    return true;
   }
   </script>
 </body>
