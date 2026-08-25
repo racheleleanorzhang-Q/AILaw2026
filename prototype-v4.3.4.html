@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>文森 AI 管理系统 · 原型 V4.3.4</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f6f7fb}
+    iframe{width:100%;height:100%;border:0;display:block}
+    .boot{position:fixed;inset:0;z-index:2;display:grid;place-items:center;background:#f6f7fb;color:#667085;font:14px Arial,"Microsoft YaHei",sans-serif}
+    .boot b{display:block;margin-bottom:6px;color:#182033}
+  </style>
+</head>
+<body>
+  <div class="boot" id="boot"><div><b>文森 AI 管理系统 V4.3.4</b>正在加载审批协作能力…</div></div>
+  <iframe id="v434base" src="prototype-v4.3.3.html" title="文森 AI 管理系统 V4.3.4"></iframe>
+  <script>
+  (()=>{
+    const host=document.getElementById('v434base');
+    function locate(attempt=0){
+      try{
+        const a=host.contentDocument?.getElementById('v433base');
+        const b=a?.contentDocument?.getElementById('v432base');
+        const c=b?.contentDocument?.getElementById('v43base');
+        const e=c?.contentDocument?.getElementById('v423base');
+        const f=e?.contentDocument?.getElementById('v422base');
+        const g=f?.contentDocument?.getElementById('v42base');
+        const h=g?.contentDocument?.getElementById('v412base');
+        const i=h?.contentDocument?.getElementById('v41base');
+        const j=i?.contentDocument?.getElementById('v4base');
+        const app=j?.contentDocument?.getElementById('base');
+        if(app?.contentDocument?.getElementById('v433Ready')){
+          applyV434(app.contentWindow,app.contentDocument);
+          return;
+        }
+      }catch(error){console.warn('V4.3.4 locating app',error)}
+      if(attempt<200)setTimeout(()=>locate(attempt+1),150);
+    }
+    host.addEventListener('load',()=>locate());
+
+    function applyV434(w,d){
+      if(d.getElementById('v434Ready'))return;
+      const marker=d.createElement('i');marker.id='v434Ready';marker.hidden=true;d.body.appendChild(marker);
+      document.getElementById('boot').style.display='none';
+      d.title='文森 AI 管理系统 · 原型 V4.3.4';
+
+      const esc=value=>String(value??'—').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+      const people=['李文涛','叶青','陈嘉','王敏','刘璐','张晨'];
+      const departmentByType=type=>type==='工作日报'?'直属上级 / 办公室主任':type==='财务审批'?'财务部 / 办公室主任':type==='合同审批'?'办公室主任':type==='项目审批'?'项目管理办公室':'业务管理部门';
+      const approverByType=type=>type==='工作日报'?'李文涛':type==='财务审批'?'王敏':type==='合同审批'?'陈嘉':type==='项目审批'?'叶青':'刘璐';
+      const isPending=a=>['待审批','审批中'].includes(a.status);
+
+      w.v434Notifications=[];
+      w.v42Approvals.forEach(a=>{
+        a.currentDepartment??=departmentByType(a.type);
+        a.currentApprover??=approverByType(a.type);
+        a.countersigners??=[];
+        a.ccRecipients??=[];
+        a.v434Actions??=[];
+        a.urgent??=false;
+      });
+
+      const notificationButton=d.createElement('button');
+      notificationButton.id='v434NotificationButton';
+      notificationButton.innerHTML='🔔 消息 <span id="v434NotificationCount">0</span>';
+      notificationButton.onclick=()=>d.getElementById('v434NotificationPanel').classList.toggle('show');
+      d.body.appendChild(notificationButton);
+      const notificationPanel=d.createElement('aside');
+      notificationPanel.id='v434NotificationPanel';
+      notificationPanel.innerHTML='<header><b>系统消息</b><button class="link" onclick="document.getElementById(\'v434NotificationPanel\').classList.remove(\'show\')">关闭</button></header><div id="v434NotificationList"><p>暂无新消息</p></div>';
+      d.body.appendChild(notificationPanel);
+
+      function renderNotifications(){
+        const count=d.getElementById('v434NotificationCount');
+        count.textContent=w.v434Notifications.length;
+        count.style.display=w.v434Notifications.length?'inline-grid':'none';
+        d.getElementById('v434NotificationList').innerHTML=w.v434Notifications.map(item=>`<article><b>${esc(item.title)}</b><small>${esc(item.content)}</small><time>${item.time}</time></article>`).join('')||'<p>暂无新消息</p>';
+      }
+
+      function renderUrgentDashboard(){
+        d.getElementById('v434UrgentTodo')?.remove();
+        const urgent=w.v42Approvals.find(a=>a.urgent&&isPending(a));
+        if(!urgent)return;
+        const dashboard=d.getElementById('dashboard');
+        const taskHead=[...dashboard.querySelectorAll('.taskhead')].find(item=>item.textContent.includes('我的待办'));
+        if(!taskHead)return;
+        const card=d.createElement('div');
+        card.id='v434UrgentTodo';card.className='v434-urgent-todo';
+        card.innerHTML=`<span class="v434-urgent-icon">催</span><div><b>${esc(urgent.title)}</b><small>${esc(urgent.applicant)}已催办 · 当前审批人 ${esc(urgent.currentApprover)} · ${urgent.remindedAt}</small></div><span class="tag red">已催办</span><button class="link" onclick="showPage('approvals');openV42Approval('${urgent.id}')">查看审批</button>`;
+        taskHead.insertAdjacentElement('afterend',card);
+      }
+
+      const oldRenderApprovals=w.renderV42Approvals;
+      w.renderV42Approvals=function(){
+        const kw=(d.getElementById('v42ApprovalSearch')?.value||'').toLowerCase(),type=d.getElementById('v42ApprovalType')?.value||'all',status=d.getElementById('v42ApprovalStatus')?.value||'all';
+        const list=w.v42Approvals.filter(a=>a.view===w.activeV42Approval&&(!kw||(a.title+' '+a.applicant+' '+a.currentApprover).toLowerCase().includes(kw))&&(type==='all'||a.type===type)&&(status==='all'||a.status===status));
+        d.getElementById('v42ApprovalList').innerHTML=list.map(a=>`<article class="v42-approval-card ${a.urgent?'v434-urgent-card':''}" onclick="openV42Approval('${a.id}')"><div><b>${a.urgent?'<span class="tag red">已催办</span> ':''}${esc(a.title)}</b><small>${esc(a.ai)}</small></div><div><span class="v42-mini">发起人</span><b>${esc(a.applicant)}</b><small>当前审批：${esc(a.currentApprover)}</small></div><div><span class="tag blue">${esc(a.type)}</span></div><div><span class="tag ${isPending(a)?'amber':a.status==='已通过'?'green':'blue'}">${esc(a.status)}</span><small>${esc(a.time)}</small></div><b style="color:#6a59df">查看 ›</b></article>`).join('')||'<div class="v42-empty">当前筛选下暂无流程</div>';
+      };
+
+      function approvalById(id){
+        const existing=w.v42Approvals.find(x=>x.id===id);
+        if(existing)return existing;
+        const report=w.v42DailyReports.find(x=>x.id===id);
+        if(!report)return null;
+        return {id:report.id,view:'mine',title:report.person+' · '+report.date+'工作日报',applicant:report.person,type:'工作日报',status:report.status,time:report.date,objectId:report.id,ai:`申报${report.hours}小时，建议得分${report.suggestedScore}分。`,currentDepartment:'直属上级 / 办公室主任',currentApprover:'李文涛',countersigners:[],ccRecipients:[],v434Actions:[],urgent:false};
+      }
+
+      w.openV42Approval=function(id){
+        const a=approvalById(id);if(!a)return;
+        const report=w.v42DailyReports.find(r=>r.id===a.objectId);
+        const countersign=a.countersigners.length?a.countersigners.map(person=>`<span class="v434-person-chip">${esc(person.name)} · ${esc(person.status)}</span>`).join(''):'<span class="v42-mini">暂未添加会签人</span>';
+        const cc=a.ccRecipients.length?a.ccRecipients.map(name=>`<span class="v434-person-chip muted">${esc(name)}</span>`).join(''):'<span class="v42-mini">暂未抄送</span>';
+        const actionLog=a.v434Actions.length?`<section class="v42-card"><h3>协作操作记录</h3>${a.v434Actions.map(item=>`<div class="v42-list-row"><div><b>${esc(item.action)}</b><small>${esc(item.operator)} · ${esc(item.time)}</small></div><span class="tag blue">已记录</span></div>`).join('')}</section>`:'';
+        d.getElementById('v42ApprovalDetailTitle').textContent=a.title;
+        d.getElementById('v42ApprovalDetailSub').textContent=`${a.type} · ${a.applicant} · ${a.status}`;
+        d.getElementById('v42ApprovalDetailBody').innerHTML=`<div class="v42-ai-review"><b>✦ AI审批建议</b><small>${esc(a.ai)} AI仅提供辅助判断，最终审批结果由审批人确认。</small></div>${report?`<section class="v42-card"><h3>日报合理性评估</h3><div class="v42-detail-grid"><div><span>工作日期</span><b>${report.date}</b></div><div><span>申报总时长</span><b>${report.hours}h</b></div><div><span>AI建议难易度</span><b>${report.difficulty}</b></div><div><span>同类工作参考</span><b>5–6.5h</b></div><div><span>AI合理性</span><b>${report.reasonable}</b></div><div><span>AI建议得分</span><b class="v42-score">${report.suggestedScore}</b></div></div></section>`:`<section class="v42-card"><h3>申请基本信息</h3><div class="v42-detail-grid"><div><span>流程编号</span><b>${esc(a.id)}</b></div><div><span>审批类型</span><b>${esc(a.type)}</b></div><div><span>发起人</span><b>${esc(a.applicant)}</b></div><div><span>关联业务对象</span><b>${esc(a.objectId)}</b></div><div><span>发起时间</span><b>${esc(a.time)}</b></div><div><span>状态</span><b>${esc(a.status)}</b></div></div></section>`}<section class="v42-card"><h3>审批流程与记录</h3><div class="v42-list-row"><div><b>${esc(a.applicant)} · 提交申请</b><small>${esc(a.time)} · 已完成</small></div><span class="tag green">✓</span></div><div class="v42-list-row v434-current-node"><div><b>${esc(a.currentDepartment)}</b><small>当前审批人：<strong>${esc(a.currentApprover)}</strong></small><div class="v434-people"><span>会签：</span>${countersign}</div><div class="v434-people"><span>抄送：</span>${cc}</div></div><span class="tag amber">当前</span></div></section>${actionLog}<div class="v42-actions v434-detail-actions">${a.view==='todo'&&a.status==='待审批'?`<button class="btn" onclick="openV434PersonPicker('${a.id}','countersign')">＋ 添加会签人</button><button class="btn" onclick="openV434PersonPicker('${a.id}','cc')">抄送</button><span class="v434-action-spacer"></span><button class="btn" onclick="decideV42Approval('${a.id}','退回')">退回</button><button class="btn" onclick="decideV42Approval('${a.id}','拒绝')">拒绝</button><button class="btn primary" onclick="decideV42Approval('${a.id}','通过')">同意审批</button>`:a.view==='mine'&&isPending(a)?`<button class="btn ${a.urgent?'v434-reminded':''}" onclick="urgeV434Approval('${a.id}')">${a.urgent?'已催办 · 再次催办':'催办'}</button><button class="btn" onclick="openV434PersonPicker('${a.id}','cc')">抄送</button><span class="v434-action-spacer"></span><button class="btn" onclick="closeV42Approval()">关闭</button>`:'<button class="btn" onclick="closeV42Approval()">关闭</button>'}</div>`;
+        d.getElementById('v42ApprovalDetail').classList.add('show');
+      };
+
+      let pickerApproval='',pickerAction='cc';
+      const picker=d.createElement('div');picker.id='v434PersonModal';picker.className='overlay';
+      picker.innerHTML=`<section class="modal"><div class="modalhead"><div><small>流程审批 / 人员协作</small><h2 id="v434PickerTitle">选择人员</h2></div><button class="close" onclick="closeV434PersonPicker()">×</button></div><div class="modalbody"><div class="v434-picker-tip" id="v434PickerTip"></div><label class="v434-picker-label">指定人员<select id="v434PersonSelect"></select></label></div><div class="modalfoot"><button class="btn" onclick="closeV434PersonPicker()">取消</button><button class="btn primary" onclick="confirmV434Person()">确认添加</button></div></section>`;
+      d.body.appendChild(picker);
+      w.openV434PersonPicker=function(id,action){
+        const a=approvalById(id);if(!a)return;pickerApproval=id;pickerAction=action;
+        d.getElementById('v434PickerTitle').textContent=action==='countersign'?'添加会签人':'添加抄送人';
+        d.getElementById('v434PickerTip').innerHTML=action==='countersign'?'<b>会签规则</b><span>所有会签人均同意后，当前审批节点才可通过；任一人拒绝则节点拒绝。</span>':'<b>抄送规则</b><span>抄送人收到系统消息并可查看流程，但不参与审批结果。</span>';
+        const used=action==='countersign'?a.countersigners.map(x=>x.name):a.ccRecipients;
+        d.getElementById('v434PersonSelect').innerHTML=people.filter(name=>name!==a.applicant&&name!==a.currentApprover&&!used.includes(name)).map(name=>`<option>${name}</option>`).join('')||'<option value="">暂无可选人员</option>';
+        picker.classList.add('show');
+      };
+      w.closeV434PersonPicker=function(){picker.classList.remove('show')};
+      w.confirmV434Person=function(){
+        const a=approvalById(pickerApproval),name=d.getElementById('v434PersonSelect').value;if(!a||!name)return;
+        if(pickerAction==='countersign')a.countersigners.push({name,status:'待会签'});else a.ccRecipients.push(name);
+        a.v434Actions.unshift({action:pickerAction==='countersign'?`添加会签人：${name}`:`抄送给：${name}`,operator:a.view==='todo'?a.currentApprover:a.applicant,time:'刚刚'});
+        w.closeV434PersonPicker();w.renderV42Approvals();w.openV42Approval(a.id);w.toast(pickerAction==='countersign'?'会签任务已发送':'已发送抄送消息');
+      };
+
+      w.urgeV434Approval=function(id){
+        const a=approvalById(id);if(!a||a.view!=='mine'||!isPending(a))return;
+        a.urgent=true;a.remindedAt='刚刚';a.v434Actions.unshift({action:`催办当前审批人：${a.currentApprover}`,operator:a.applicant,time:'刚刚'});
+        w.v434Notifications.unshift({title:'审批催办提醒',content:`${a.applicant}催办“${a.title}”，请尽快处理。`,receiver:a.currentApprover,time:'刚刚'});
+        renderNotifications();renderUrgentDashboard();w.renderV42Approvals();w.openV42Approval(a.id);w.toast(`已向${a.currentApprover}发送系统催办消息，任务已置顶`);
+      };
+
+      const oldDecide=w.decideV42Approval;
+      w.decideV42Approval=function(id,result){
+        const a=approvalById(id);
+        if(result==='通过'&&a?.countersigners.some(person=>person.status!=='已同意')){w.toast('仍有会签人未完成审批，当前节点暂不能通过');return}
+        oldDecide(id,result);
+      };
+
+      const oldSaveFlow=w.saveV42Flow;
+      w.saveV42Flow=function(draft){
+        const known=new Set(w.v42Approvals.map(item=>item.id));oldSaveFlow(draft);
+        w.v42Approvals.filter(item=>!known.has(item.id)).forEach(a=>{a.currentDepartment=departmentByType(a.type);a.currentApprover=approverByType(a.type);a.countersigners=[];a.ccRecipients=[];a.v434Actions=[];a.urgent=false});
+        w.renderV42Approvals();
+      };
+
+      const css=d.createElement('style');css.id='v434Styles';css.textContent=`
+        #v434NotificationButton{position:fixed;z-index:70;top:16px;right:170px;display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #e0dcff;border-radius:999px;background:#fff;color:#6357d9;box-shadow:0 6px 20px #24204412;cursor:pointer}#v434NotificationCount{display:none;place-items:center;min-width:18px;height:18px;padding:0 3px;border-radius:10px;background:#ef6259;color:#fff;font-size:11px}#v434NotificationPanel{position:fixed;z-index:110;top:58px;right:22px;display:none;width:360px;max-height:420px;overflow:auto;border:1px solid #e1e4ec;border-radius:14px;background:#fff;box-shadow:0 18px 55px #1b20352c}#v434NotificationPanel.show{display:block}#v434NotificationPanel header{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #eceef3;background:#fff}#v434NotificationList{padding:8px 16px}#v434NotificationList article{padding:11px 0;border-bottom:1px solid #eceef3}#v434NotificationList b,#v434NotificationList small,#v434NotificationList time{display:block}#v434NotificationList small{margin:5px 0;color:#626c80;line-height:1.5}#v434NotificationList time{color:#929aab;font-size:11px}.v434-urgent-todo{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:13px;align-items:center;margin:0 0 4px;padding:12px;border:1px solid #ffc8c3;border-radius:12px;background:#fff6f4}.v434-urgent-todo b,.v434-urgent-todo small{display:block}.v434-urgent-todo small{margin-top:4px;color:#7d6670}.v434-urgent-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#ffded9;color:#dc5047;font-weight:800}.v434-urgent-card{order:-1;border-color:#ffc3bd!important;background:#fffafa!important}.v434-current-node{align-items:flex-start}.v434-current-node>div{min-width:0}.v434-current-node small strong{color:#493d9c}.v434-people{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}.v434-people>span:first-child{color:#7d8698;font-size:12px}.v434-person-chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#f1efff;color:#5e51ca;font-size:11px}.v434-person-chip.muted{background:#f2f4f7;color:#667085}.v434-detail-actions{align-items:center}.v434-action-spacer{flex:1}.v434-reminded{border-color:#ffc6bf!important;color:#d95950!important;background:#fff5f3!important}.v434-picker-tip{display:flex;gap:10px;padding:13px 14px;margin-bottom:18px;border:1px solid #ddd8ff;border-radius:11px;background:#f7f5ff}.v434-picker-tip b,.v434-picker-tip span{display:block}.v434-picker-tip span{color:#706985;line-height:1.55}.v434-picker-label{display:grid;gap:8px;color:#687287}.v434-picker-label select{box-sizing:border-box;width:100%;height:44px;padding:0 12px;border:1px solid #dfe2eb;border-radius:10px;background:#fff}#v434PersonModal.overlay{box-sizing:border-box;align-items:center!important;justify-content:center!important;padding:24px!important}#v434PersonModal.overlay.show{display:flex!important}#v434PersonModal .modal{display:flex!important;flex-direction:column!important;width:520px!important;max-width:calc(100vw - 48px)!important;margin:0!important;padding:0!important;overflow:hidden!important;border-radius:16px!important;background:#fff!important}#v434PersonModal .modalhead{position:static!important;display:flex!important;justify-content:space-between!important;align-items:flex-start!important;padding:19px 22px!important;border-bottom:1px solid #eceef3!important}#v434PersonModal .modalhead h2{margin:5px 0 0!important}#v434PersonModal .modalhead .close{position:static!important;display:grid!important;place-items:center!important;width:36px!important;height:36px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:#f3f4f8!important}#v434PersonModal .modalbody{padding:20px 22px!important}#v434PersonModal .modalfoot{position:static!important;display:flex!important;justify-content:flex-end!important;gap:8px!important;padding:15px 22px!important;border-top:1px solid #eceef3!important;background:#fff!important}@media(max-width:700px){#v434NotificationButton{right:86px}#v434NotificationPanel{right:12px;width:calc(100vw - 24px)}.v434-urgent-todo{grid-template-columns:auto 1fr}.v434-urgent-todo .tag,.v434-urgent-todo .link{grid-column:2}.v434-detail-actions .v434-action-spacer{display:none}.v434-detail-actions .btn{flex:1 1 auto}}
+      `;d.head.appendChild(css);
+
+      renderNotifications();renderUrgentDashboard();w.renderV42Approvals();
+    }
+  })();
+  </script>
+</body>
+</html>
