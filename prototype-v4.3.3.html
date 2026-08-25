@@ -82,7 +82,6 @@
 
       const financeContent=d.getElementById('v43FinanceContent'),ledgerContent=d.getElementById('v43LedgerContent');
       const syncWriteoffs=()=>{normalizeWriteoffContractProject(financeContent);normalizeWriteoffContractProject(ledgerContent)};
-      [financeContent,ledgerContent].forEach(root=>root&&new MutationObserver(syncWriteoffs).observe(root,{childList:true,subtree:true}));
       const oldRender=w.renderV43Finance;
       w.renderV43Finance=function(){oldRender();syncWriteoffs()};
       const oldFinanceSwitch=w.switchV43Finance;
@@ -105,6 +104,7 @@
         oldSaveInvoice();
         const created=w.v43Invoices.find(item=>!known.has(item.id));
         if(created)created.currency=currency;
+        syncWriteoffs();
       };
 
       const oldOpenCollection=w.openV43Collection;
@@ -120,6 +120,7 @@
         oldSaveCollection();
         const created=w.v43Collections.find(item=>!known.has(item.id));
         if(created)created.currency=currency;
+        syncWriteoffs();
       };
 
       const css=d.createElement('style');
