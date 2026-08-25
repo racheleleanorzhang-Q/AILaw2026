@@ -57,13 +57,19 @@
 
       const financeContent=d.getElementById('v43FinanceContent');
       const ledgerContent=d.getElementById('v43LedgerContent');
-      const syncTables=()=>requestAnimationFrame(()=>{
+      const syncTables=()=>{
         contractProjectFirst(financeContent);
         contractProjectFirst(ledgerContent);
-      });
+      };
       [financeContent,ledgerContent].forEach(root=>root&&new MutationObserver(syncTables).observe(root,{childList:true,subtree:true}));
       const oldRender=w.renderV43Finance;
       w.renderV43Finance=function(){oldRender();syncTables()};
+      const oldFinanceSwitch=w.switchV43Finance;
+      w.switchV43Finance=function(tab){oldFinanceSwitch(tab);syncTables()};
+      const oldLedgerSwitch=w.switchV43Ledger;
+      w.switchV43Ledger=function(tab){oldLedgerSwitch(tab);syncTables()};
+      const oldOpenLedger=w.openContractLedger;
+      w.openContractLedger=function(contractId,tab){oldOpenLedger(contractId,tab);syncTables()};
       syncTables();
 
       const css=d.createElement('style');
