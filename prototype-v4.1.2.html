@@ -57,6 +57,12 @@
       const list=w.v41Contracts.filter(c=>(!kw||(c.id+' '+c.customer+' '+c.name).toLowerCase().includes(kw))&&(status==='all'||c.status===status));
       d.getElementById('v41ContractRows').innerHTML=list.map(c=>{const meta=c.archiveStatus==='archived'?['已归档','blue']:(statusMeta[c.status]||[c.status,'']);const statusTag=c.status==='ai_diff'&&c.archiveStatus!=='archived'?`<button class="tag red tag-button" onclick="openContractDiff('${c.id}')" title="查看差异内容">发现差异</button>`:`<span class="tag ${meta[1]} v41-contract-status">${meta[0]}</span>`;return `<tr><td><button class="link" onclick="openContractDetail('${c.id}')">${c.id}</button><br><small>${esc(c.name)}</small></td><td><b>${esc(c.customer)}</b></td><td><b>${money(c.amount)}</b></td><td>${statusTag}</td><td><span class="v41-owner"><i>${owner(c)[0]}</i>${owner(c)}</span></td><td><div class="v41-actions">${actions(c)}</div></td><td><div class="v412-ledger ledgerlink">${ledgers(c)}</div></td></tr>`}).join('')||'<tr><td colspan="7" style="text-align:center;padding:30px;color:#8992a4">暂无符合条件的合同</td></tr>';
     };
+    ['v41ContractSearch','v41ContractStatus'].forEach(id=>{
+      const oldControl=d.getElementById(id),newControl=oldControl.cloneNode(true);
+      oldControl.replaceWith(newControl);
+      newControl.addEventListener('input',w.renderV41Contracts);
+      newControl.addEventListener('change',w.renderV41Contracts);
+    });
     w.openContractDetail=function(id){
       const c=w.v41Contracts.find(x=>x.id===id);if(!c)return;
       const drawer=d.getElementById('contractDetailDrawer'),meta=c.archiveStatus==='archived'?['已归档','blue']:(statusMeta[c.status]||[c.status,'']),m=typeof w.contractDetailModel==='function'?w.contractDetailModel(c):{},opp=w.v41Opportunities.find(o=>o.id===c.opportunityId),projectId=c.projectIds?.[0]||'',profile=w.v41ContractFinancialProfiles[c.id]||{},hasProject=!!projectId;
