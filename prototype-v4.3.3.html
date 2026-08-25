@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>文森 AI 管理系统 · 原型 V4.3.3</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f6f7fb}
+    iframe{width:100%;height:100%;border:0;display:block}
+    .boot{position:fixed;inset:0;z-index:2;display:grid;place-items:center;background:#f6f7fb;color:#667085;font:14px Arial,"Microsoft YaHei",sans-serif}
+    .boot b{display:block;margin-bottom:6px;color:#182033}
+  </style>
+</head>
+<body>
+  <div class="boot" id="boot"><div><b>文森 AI 管理系统 V4.3.3</b>正在加载财务字段优化…</div></div>
+  <iframe id="v433base" src="prototype-v4.3.2.html" title="文森 AI 管理系统 V4.3.3"></iframe>
+  <script>
+  (()=>{
+    const host=document.getElementById('v433base');
+    function locate(attempt=0){
+      try{
+        const a=host.contentDocument?.getElementById('v432base');
+        const b=a?.contentDocument?.getElementById('v43base');
+        const c=b?.contentDocument?.getElementById('v423base');
+        const e=c?.contentDocument?.getElementById('v422base');
+        const f=e?.contentDocument?.getElementById('v42base');
+        const g=f?.contentDocument?.getElementById('v412base');
+        const h=g?.contentDocument?.getElementById('v41base');
+        const i=h?.contentDocument?.getElementById('v4base');
+        const app=i?.contentDocument?.getElementById('base');
+        if(app?.contentDocument?.getElementById('v432Ready')){
+          applyV433(app.contentWindow,app.contentDocument);
+          return;
+        }
+      }catch(error){console.warn('V4.3.3 locating app',error)}
+      if(attempt<180)setTimeout(()=>locate(attempt+1),150);
+    }
+    host.addEventListener('load',()=>locate());
+
+    function applyV433(w,d){
+      if(d.getElementById('v433Ready'))return;
+      const marker=d.createElement('i');marker.id='v433Ready';marker.hidden=true;d.body.appendChild(marker);
+      document.getElementById('boot').style.display='none';
+      d.title='文森 AI 管理系统 · 原型 V4.3.3';
+
+      const esc=value=>String(value??'—').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+      const currencyOptions=`<option value="CNY">人民币 CNY</option><option value="USD">美元 USD</option><option value="HKD">港币 HKD</option><option value="EUR">欧元 EUR</option><option value="GBP">英镑 GBP</option><option value="JPY">日元 JPY</option>`;
+
+      w.v43Invoices.forEach(item=>item.currency??='CNY');
+      w.v43Collections.forEach(item=>item.currency??='CNY');
+
+      function addCurrencyField(amountId,currencyId){
+        const amount=d.getElementById(amountId),amountLabel=amount?.closest('label');
+        if(!amountLabel||d.getElementById(currencyId))return;
+        amountLabel.classList.remove('wide');
+        const label=d.createElement('label');
+        label.className='v433-currency';
+        label.innerHTML=`币种 <select id="${currencyId}">${currencyOptions}</select>`;
+        amountLabel.after(label);
+      }
+      addCurrencyField('v43InvoiceAmount','v433InvoiceCurrency');
+      addCurrencyField('v43CollectionAmount','v433CollectionCurrency');
+      d.getElementById('v43CollectionPayer')?.closest('label')?.classList.remove('wide');
+
+      function normalizeWriteoffContractProject(root){
+        if(!root)return;
+        root.querySelectorAll('table').forEach(table=>{
+          const headers=[...table.querySelectorAll('thead th')].map(cell=>cell.textContent.trim());
+          const contractIndex=headers.indexOf('合同与项目'),writeoffIndex=headers.indexOf('核销编号');
+          if(contractIndex<0||writeoffIndex<0)return;
+          table.querySelectorAll('tbody tr').forEach(row=>{
+            const cells=[...row.children],writeoffId=cells[writeoffIndex]?.textContent.trim();
+            const record=w.v43Writeoffs.find(item=>item.id===writeoffId);
+            const contract=w.v43FinanceContracts.find(item=>item.id===record?.contractId);
+            if(cells[contractIndex]&&contract)cells[contractIndex].innerHTML=`<b>${esc(contract.id)}</b><br><small>${esc(contract.project)}</small>`;
+          });
+        });
+      }
+
+      const financeContent=d.getElementById('v43FinanceContent'),ledgerContent=d.getElementById('v43LedgerContent');
+      const syncWriteoffs=()=>{normalizeWriteoffContractProject(financeContent);normalizeWriteoffContractProject(ledgerContent)};
+      [financeContent,ledgerContent].forEach(root=>root&&new MutationObserver(syncWriteoffs).observe(root,{childList:true,subtree:true}));
+      const oldRender=w.renderV43Finance;
+      w.renderV43Finance=function(){oldRender();syncWriteoffs()};
+      const oldFinanceSwitch=w.switchV43Finance;
+      w.switchV43Finance=function(tab){oldFinanceSwitch(tab);syncWriteoffs()};
+      const oldLedgerSwitch=w.switchV43Ledger;
+      w.switchV43Ledger=function(tab){oldLedgerSwitch(tab);syncWriteoffs()};
+      const oldOpenLedger=w.openContractLedger;
+      w.openContractLedger=function(contractId,tab){oldOpenLedger(contractId,tab);syncWriteoffs()};
+      syncWriteoffs();
+
+      const oldOpenInvoice=w.openV43Invoice;
+      w.openV43Invoice=function(contractId=''){
+        oldOpenInvoice(contractId);
+        const select=d.getElementById('v433InvoiceCurrency');
+        if(select){select.disabled=false;select.value='CNY'}
+      };
+      const oldSaveInvoice=w.saveV43Invoice;
+      w.saveV43Invoice=function(){
+        const known=new Set(w.v43Invoices.map(item=>item.id)),currency=d.getElementById('v433InvoiceCurrency')?.value||'CNY';
+        oldSaveInvoice();
+        const created=w.v43Invoices.find(item=>!known.has(item.id));
+        if(created)created.currency=currency;
+      };
+
+      const oldOpenCollection=w.openV43Collection;
+      w.openV43Collection=function(contractId='',collectionId=''){
+        const existing=w.v43Collections.find(item=>item.id===collectionId);
+        oldOpenCollection(contractId,collectionId);
+        const select=d.getElementById('v433CollectionCurrency');
+        if(select){select.value=existing?.currency||'CNY';select.disabled=!!existing}
+      };
+      const oldSaveCollection=w.saveV43Collection;
+      w.saveV43Collection=function(){
+        const known=new Set(w.v43Collections.map(item=>item.id)),currency=d.getElementById('v433CollectionCurrency')?.value||'CNY';
+        oldSaveCollection();
+        const created=w.v43Collections.find(item=>!known.has(item.id));
+        if(created)created.currency=currency;
+      };
+
+      const css=d.createElement('style');
+      css.id='v433Styles';
+      css.textContent=`#v43InvoiceModal .v433-currency,#v43CollectionModal .v433-currency{grid-column:auto!important}`;
+      d.head.appendChild(css);
+    }
+  })();
+  </script>
+</body>
+</html>
