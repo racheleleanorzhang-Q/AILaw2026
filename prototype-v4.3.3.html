@@ -72,7 +72,10 @@
             const cells=[...row.children],writeoffId=cells[writeoffIndex]?.textContent.trim();
             const record=w.v43Writeoffs.find(item=>item.id===writeoffId);
             const contract=w.v43FinanceContracts.find(item=>item.id===record?.contractId);
-            if(cells[contractIndex]&&contract)cells[contractIndex].innerHTML=`<b>${esc(contract.id)}</b><br><small>${esc(contract.project)}</small>`;
+            if(cells[contractIndex]&&contract){
+              const expected=`<b>${esc(contract.id)}</b><br><small>${esc(contract.project)}</small>`;
+              if(cells[contractIndex].innerHTML!==expected)cells[contractIndex].innerHTML=expected;
+            }
           });
         });
       }
