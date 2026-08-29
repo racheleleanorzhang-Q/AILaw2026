@@ -4,14 +4,21 @@
 
 ## 当前正式基线
 
-- 正式版本：V6.2.3
-- 正式原型：[prototype-v6.2.3.html](./prototype-v6.2.3.html)
-- 发布后在线地址：https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v6.2.3.html
-- 基线说明：[WENSEN_AI_V6.2.3_BASELINE.md](./WENSEN_AI_V6.2.3_BASELINE.md)
-- 产品规则基线：V6.2.3
-- 上一稳定原型：[prototype-v6.2.2.html](./prototype-v6.2.2.html)
+- 正式版本：V6.3
+- 正式原型：[prototype-v6.3.html](./prototype-v6.3.html)
+- 发布后在线地址：https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v6.3.html
+- 基线说明：[WENSEN_AI_V6.3_BASELINE.md](./WENSEN_AI_V6.3_BASELINE.md)
+- 产品规则基线：V6.3
+- 上一稳定原型：[prototype-v6.2.3.html](./prototype-v6.2.3.html)
 
-V6.2.3 继续采用 Gitee Legal UI，将项目文件、风险和审批页签升级为可操作原型；本版本为单文件静态原型，不连接真实后端。
+V6.3 继续采用 Gitee Legal UI，正式丰富客户与合同模块并打通项目生成链路；本版本为单文件静态原型，不连接真实后端。
+
+## V6.3 本轮升级
+
+- 客户模块增加清单、详情、联系人、合同、项目、文件和动态。
+- 新增客户自动进入准入与利益冲突审批，未通过时禁止创建正式合同。
+- 合同模块增加创建、详情、收费期限、合同文件、关联项目和审批记录。
+- 合同审批通过、完成双签并经 AI 核验一致后，才自动生成正式项目。
 
 ## V6.2.3 本轮升级
 
