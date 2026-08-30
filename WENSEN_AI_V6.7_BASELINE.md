@@ -14,7 +14,7 @@
 ## Pages 地址
 
 - 预留地址：`https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v6.7.html`
-- 当前状态：仅完成本地版本，尚未发布 GitHub Pages。
+- 当前状态：已写入 GitHub `main`，由 GitHub Pages 自动部署。
 
 ## 菜单结构变化
 
