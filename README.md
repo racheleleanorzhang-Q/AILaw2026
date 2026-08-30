@@ -4,14 +4,24 @@
 
 ## 当前正式基线
 
-- 正式版本：V6.3
-- 正式原型：[prototype-v6.3.html](./prototype-v6.3.html)
-- 发布后在线地址：https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v6.3.html
-- 基线说明：[WENSEN_AI_V6.3_BASELINE.md](./WENSEN_AI_V6.3_BASELINE.md)
-- 产品规则基线：V6.3
-- 上一稳定原型：[prototype-v6.2.3.html](./prototype-v6.2.3.html)
+- 正式版本：V6.5.2
+- 正式原型：[prototype-v6.5.2.html](./prototype-v6.5.2.html)
+- 发布后在线地址：https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v6.5.2.html
+- 基线说明：[WENSEN_AI_V6.5.2_BASELINE.md](./WENSEN_AI_V6.5.2_BASELINE.md)
+- 产品需求文档：[WENSEN_AI_PRD_V2.0.md](./WENSEN_AI_PRD_V2.0.md)
+- 产品规则基线：PRD V2.0 / 原型 V6.5.2
+- 上一稳定原型：[prototype-v6.3.html](./prototype-v6.3.html)
 
-V6.3 继续采用 Gitee Legal UI，正式丰富客户与合同模块并打通项目生成链路；本版本为单文件静态原型，不连接真实后端。
+V6.5.2 在 V6.3 客户与合同链路基础上，补齐商机、审批、工作台和财务多对多核销原型；本版本为单文件静态原型，不连接真实后端。
+
+## V6.5.2 本轮升级
+
+- 客户与商机采用一级页面内切换，详情概览聚合关联业务内容。
+- 合同支持独立浏览器标签页上传已盖章合同、文件 AI 核验和发起变更。
+- 统一审批中心支持创建流程弹窗、同意意见和必填拒绝原因。
+- 工作台采用三排等宽双栏布局，简报可跳转，待办默认三条并可展开。
+- 财务提供应收期次、开票记录、回款记录和核销明细，体现发票、回款和应收期次多对多关系。
+- 正式产品需求基线升级为 PRD V2.0。
 
 ## V6.3 本轮升级
 
