@@ -4,7 +4,7 @@
 
 - 基础原型：`prototype-v7.1.html`
 - 本次原型：`prototype-v7.2.html`
-- 本地开发版本，暂不发布 GitHub Pages。
+- 正式发布地址：`https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v7.2.html`。
 
 ## 本次调整
 
