@@ -1,4 +1,4 @@
-# 文森 AI 管理系统 V7.5.5 本地开发基线
+# 文森 AI 管理系统 V7.5.5 正式基线
 
 ## 基础版本
 
@@ -8,8 +8,8 @@
 
 ## 发布状态
 
-- 当前状态：仅本地开发与校验，未提交、未推送、未发布 GitHub Pages。
-- 预留 Pages 地址：`https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v7.5.5.html`。
+- 当前状态：已通过 GitHub App/API 写入远程 `main`，并由 GitHub Pages 自动发布。
+- Pages 地址：`https://racheleleanorzhang-q.github.io/AILaw2026/prototype-v7.5.5.html`。
 
 ## 菜单结构
 
